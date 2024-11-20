@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="go.utic.cctv.mapper.CctvApiMapper">
+
+    <select id="getApiAuthorizedInfo"  resultType="VoAuthorized">
+        <![CDATA[
+        SELECT TRIM(a.ipaddr) AS accessIpAddrs,
+          CASE WHEN a.expiredt >= SYSDATE THEN 1
+               ELSE 0
+           END   AS isAuthorized
+          FROM tb_api_client a, tb_api_acl b
+         WHERE a.apitoken = #{apiToken}
+           AND a.apitoken = b.apitoken
+           AND b.apiid    = #{apiId1}
+           AND b.acl      = 'A'
+        ]]>
+    </select>
+
+    <select id="getCctvInfoList" resultType="VoCctv">
+        SELECT CCTVID, CCTVNAME, STREAMINGSESSION, INNER_IP, PORT, A.XCOORD XCOORD, A.YCOORD YCOORD
+          FROM CCTV_SESSION A, WALL_LIST_CITY B
+         WHERE SUBSTR(A.CCTVID,1,3) = B.CENTERID
+           AND B.SERVICE_USE = 1
+        ORDER BY CCTVID
+    </select>
+
+    <insert id="insertInvokeHs" parameterType="VoApiInvoke">
+        INSERT INTO tb_api_invoke_hs (apiid,apitoken,ipaddr,eventdt,error)
+        VALUES (#{apiId},#{apiToken},#{ipAddr},TO_DATE(#{eventDt},'yyyy-MM-dd HH24:mi:ss'),#{error})
+    </insert>
+
+</mapper>
