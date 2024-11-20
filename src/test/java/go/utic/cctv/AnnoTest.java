@@ -23,7 +23,6 @@ public class AnnoTest {
             assertThat(context).hasSingleBean(MyBean.class);
             assertThat(context).hasSingleBean(Config1.class);
         });
-        System.out.println("Hellpo");
 
         // false
         new ApplicationContextRunner().withUserConfiguration(Config2.class).run(context -> {
